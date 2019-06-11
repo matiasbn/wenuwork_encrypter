@@ -1,16 +1,5 @@
 import crypto from 'crypto'
 
-const wifiId = '22'
-const deviceId = ['2201', '2202', '2203']
-const phases = 'V3' // V3 = tree-phase, V1 = mono-phase
-
-const mac = '9YnQwnS'
-const cryptoKey = 'Pe4XJPjaSPTqWkE5'
-const ivArray = [
-  'd+xCMYLf0zvnHOQdih/4Dg==',
-  'NvJwviCdJ177CuhBL986kw==',
-  '1At4MROStTEUurugK9VfaQ==',
-]
 // const decipher = crypto.createCipheriv('aes-128-cbc',Buffer.from(cryptoKey,'ascii'),ivArray[0])
 // let encrypted = cipher.update(incomingMessage[1],'utf8','base64')
 // encrypted+=cipher.final('base64')
@@ -20,7 +9,10 @@ const encryptedBase64Array = []
 const hmacBase64IVArray = []
 const hmacBase64EncryptedArray = []
 
-const encrypt = (incomingMessage) => {
+const encrypt = (incomingMessage, parameters) => {
+  const {
+    wifiId, deviceId, phases, cryptoKey, ivArray, mac,
+  } = parameters
   incomingMessage.forEach((message, index) => {
     const cipher = crypto.createCipheriv(
       'aes-128-cbc',

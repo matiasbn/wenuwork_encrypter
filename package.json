@@ -16,7 +16,8 @@
   "license": "ISC",
   "homepage": "https://bitbucket.org/matiasbn/wenuwork-encrypter#readme",
   "dependencies": {
-    "gaussian": "^1.1.0"
+    "gaussian": "^1.1.0",
+    "@wenuwork/common": "git+ssh://git@bitbucket.org/engie-factory/wenuwork-common.git#v1.4.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.4.4",
