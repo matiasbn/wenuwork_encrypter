@@ -12,7 +12,6 @@
 
 import { Models } from '@wenuwork/common'
 import crypto from 'crypto'
-import cron from 'node-cron'
 import baseMessage from './helpers/baseMessage'
 import encrypt from './helpers/encrypt'
 import sendMessage from './helpers/sendMessage'
