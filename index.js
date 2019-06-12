@@ -12,6 +12,7 @@
 
 import { Models } from '@wenuwork/common'
 import crypto from 'crypto'
+import cron from 'node-cron'
 import baseMessage from './helpers/baseMessage'
 import encrypt from './helpers/encrypt'
 import sendMessage from './helpers/sendMessage'
@@ -48,14 +49,13 @@ Wifi.findOne({ wifiId }).then((wifiData) => {
   }
 
   /**
-   * @description if the second parameter is true, it will keep the 'base message'
-   * so it can be customized directly on the 'helpers/baseMessage.js' file
-   */
+     * @description if the second parameter is true, it will keep the 'base message'
+     * so it can be customized directly on the 'helpers/baseMessage.js' file
+     */
   const originalMessage = isThreePhase ? baseMessage[0] : baseMessage[1]
-  const customizedMessage = customizeMessage(originalMessage, false)
-
-  // Encrypt message
-  const encryptedMessage = encrypt(customizedMessage, parameters, isThreePhase)
-  // Send message through UDP socket
-  sendMessage(encryptedMessage, customizedMessage)
+  setInterval(() => {
+    const customizedMessage = customizeMessage(originalMessage, false, wifiId)
+    const encryptedMessage = encrypt(customizedMessage, parameters)
+    sendMessage(encryptedMessage, customizedMessage)
+  }, 15000)
 })

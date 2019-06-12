@@ -4,7 +4,7 @@
   "description": "Script to encrypt data according to 'incoming' rules",
   "main": "index.js",
   "scripts": {
-    "dev": "nodemon --exec babel-node index.js",
+    "start": "nodemon --exec babel-node index.js",
     "lint": "eslint ./**/*.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -16,8 +16,9 @@
   "license": "ISC",
   "homepage": "https://bitbucket.org/matiasbn/wenuwork-encrypter#readme",
   "dependencies": {
+    "@wenuwork/common": "git+ssh://git@bitbucket.org/engie-factory/wenuwork-common.git#v1.4.0",
     "gaussian": "^1.1.0",
-    "@wenuwork/common": "git+ssh://git@bitbucket.org/engie-factory/wenuwork-common.git#v1.4.0"
+    "node-cron": "^2.0.3"
   },
   "devDependencies": {
     "@babel/cli": "^7.4.4",

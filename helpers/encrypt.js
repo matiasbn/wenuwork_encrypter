@@ -16,15 +16,15 @@ const encrypt = (incomingMessage, parameters) => {
     )
     let encrypted = cipher.update(message, 'utf8', 'base64')
     encrypted += cipher.final('base64')
-    encryptedBase64Array.push(encrypted)
+    encryptedBase64Array[index] = encrypted
     const hmacIvBase64 = crypto.createHmac('sha256', mac)
       .update(Buffer.from(ivArray[index], 'base64'), 'ascii')
       .digest('base64')
-    hmacBase64IVArray.push(hmacIvBase64)
+    hmacBase64IVArray[index] = hmacIvBase64
     const hmacMessageBase64 = crypto.createHmac('sha256', mac)
       .update(Buffer.from(encrypted, 'base64'), 'ascii')
       .digest('base64')
-    hmacBase64EncryptedArray.push(hmacMessageBase64)
+    hmacBase64EncryptedArray[index] = hmacMessageBase64
   })
   // Final message
   const messageHeader = `${wifiId}-${phases}-[`
