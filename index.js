@@ -1,51 +1,61 @@
 /* eslint-disable no-console */
 /* eslint-disable no-unused-vars */
 /* eslint-disable prefer-template */
-import dgram from 'dgram'
-import gaussian from 'gaussian'
+/**
+  * @author Matías Barrios
+  * @description script to simulate the behavior of a sensor. It delivers a three-phase or
+  * mono-phase message on localhost (0.0.0.0:3000) depending on the value of 'phases' parameter.
+  * Automatically creates the initialization vectors, retrieves the 'crypto' and 'mac' from Wifi
+  * collection, customize the message (helpers/customizeMessage.js) encrypt it (helpers/encrypt.js)
+  * and send it to specified port.
+  */
+
 import { Models } from '@wenuwork/common'
-import incomingMessage from './templates/incomingMessage'
+import crypto from 'crypto'
+import baseMessage from './helpers/baseMessage'
 import encrypt from './helpers/encrypt'
+import sendMessage from './helpers/sendMessage'
+import customizeMessage from './helpers/customizeMessage'
 import DB from './config/db'
 
 // Init db
 import './config/env'
 
-const { Wifi } = Models
-
 DB.initDB()
 
-// Setup samples
-const dataMean = 220
-const dataStandardDeviation = Number(0.01)
-const dataDistribution = gaussian(dataMean, dataStandardDeviation)
 
-// Sensor parameters
-const wifiId = '22'
-const deviceId = ['2201', '2202', '2203']
-const phases = 'V3' // V3 = tree-phase, V1 = mono-phase
-const mac = '9YnQwnS'
-const cryptoKey = 'Pe4XJPjaSPTqWkE5'
-const ivArray = [
-  'd+xCMYLf0zvnHOQdih/4Dg==',
-  'NvJwviCdJ177CuhBL986kw==',
-  '1At4MROStTEUurugK9VfaQ==',
-]
-Wifi.findOne({ wifiId }).then((wifi) => {
-  console.log(wifi)
-})
-const parameters = {
-  wifiId, deviceId, phases, mac, cryptoKey, ivArray,
-}
-console.log(Date.now())
-// Encrypt message
-const message = encrypt(incomingMessage, parameters)
+/**
+ * @param {String} phases V3 = tree-phase, V1 = mono-phase
+ */
+const wifiId = '29'
+const phases = 'V3'
+const isThreePhase = phases === 'V3'
 
+// Retrieve info from database
+const { Wifi } = Models
+Wifi.findOne({ wifiId }).then((wifiData) => {
+  const parameters = {
+    wifiId,
+    deviceId: isThreePhase ? [`${wifiId}01`, `${wifiId}02`, `${wifiId}03`] : [`${wifiId}01`],
+    phases,
+    mac: wifiData.mac,
+    cryptoKey: wifiData.crypto,
+    ivArray: [
+      crypto.randomBytes(16).toString('base64'),
+      crypto.randomBytes(16).toString('base64'),
+      crypto.randomBytes(16).toString('base64'),
+    ],
+  }
 
-// Send message through UDP socket
-const socket = dgram.createSocket('udp4')
-const port = 3000
-const address = '0.0.0.0'
-socket.send(message, port, address, (response) => {
-  console.log(response)
+  /**
+   * @description if the second parameter is true, it will keep the 'base message'
+   * so it can be customized directly on the 'helpers/baseMessage.js' file
+   */
+  const originalMessage = isThreePhase ? baseMessage[0] : baseMessage[1]
+  const customizedMessage = customizeMessage(originalMessage, false)
+
+  // Encrypt message
+  const encryptedMessage = encrypt(customizedMessage, parameters, isThreePhase)
+  // Send message through UDP socket
+  sendMessage(encryptedMessage, customizedMessage)
 })

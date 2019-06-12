@@ -1,10 +1,5 @@
 import crypto from 'crypto'
 
-// const decipher = crypto.createCipheriv('aes-128-cbc',Buffer.from(cryptoKey,'ascii'),ivArray[0])
-// let encrypted = cipher.update(incomingMessage[1],'utf8','base64')
-// encrypted+=cipher.final('base64')
-// let deciphered = decipher.update(encrypted,'base64','utf8')
-// deciphered += decipher.final('utf8')
 const encryptedBase64Array = []
 const hmacBase64IVArray = []
 const hmacBase64EncryptedArray = []
@@ -30,14 +25,6 @@ const encrypt = (incomingMessage, parameters) => {
       .update(Buffer.from(encrypted, 'base64'), 'ascii')
       .digest('base64')
     hmacBase64EncryptedArray.push(hmacMessageBase64)
-    // console.log(message)
-    // const sign = Math.random() > 0.5 ? -1:1;
-    // message.data.v = dataDistribution.ppf(Math.random())
-    // message.data.i1 = dataDistribution.ppf(Math.random())/50
-    // message.data.p1 = dataDistribution.ppf(Math.random())
-    // message.data.powVAR = sign*dataDistribution.ppf(Math.random())
-    // message.data.powVA = dataDistribution.ppf(Math.random())
-    // finalMessage.push(message)
   })
   // Final message
   const messageHeader = `${wifiId}-${phases}-[`
