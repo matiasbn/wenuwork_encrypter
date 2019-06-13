@@ -1,5 +1,6 @@
 import gaussian from 'gaussian'
-
+import stringToObject from './stringToObject'
+import objectToMessage from './objectToMessage'
 /**
  * @description To setup samples as gaussian distributions N(mean,standardDeviation)
  * e.g. mean = 220 and standardDeviation = 0.01 would produce samples of
@@ -16,24 +17,25 @@ const currentStandardDeviation = Number(0.01)
 const currentDistribution = gaussian(currentMean, currentStandardDeviation)
 
 // pow, powVA, powVAR
-const powerMean = 220
+const powerMean = 880
 const powerStandardDeviation = Number(0.01)
 const powerDistribution = gaussian(powerMean, powerStandardDeviation)
 
-const customizeMessage = (originalMessage, keepOriginal, wifiId) => {
+const customizeMessage = (originalMessage, keepOriginal, wifiId, isThreePhase) => {
   const customizedMessages = []
-  const currentDate = Date.now() * 1000
   originalMessage.forEach((message) => {
     const sign = Math.random() > 0.5 ? -1 : 1
-    const tokenizedMessage = message.split(',')
-    tokenizedMessage[0] = currentDate
-    tokenizedMessage[2] = `id=${wifiId}`
-    tokenizedMessage[4] = `v=${voltageDistribution.ppf(Math.random()).toFixed(2)}`
-    tokenizedMessage[5] = `i=${currentDistribution.ppf(Math.random()).toFixed(2)}`
-    tokenizedMessage[7] = `p1=${powerDistribution.ppf(Math.random()).toFixed(2)}`
-    tokenizedMessage[8] = `powVAR=${sign * powerDistribution.ppf(Math.random()).toFixed(2)}`
-    tokenizedMessage[9] = `powVA=${powerDistribution.ppf(Math.random()).toFixed(2)}`
-    customizedMessages.push(tokenizedMessage.join(','))
+    const msgObject = stringToObject(message)
+    msgObject.id = wifiId
+    msgObject.v = voltageDistribution.ppf(Math.random()).toFixed(2)
+    msgObject.i1 = currentDistribution.ppf(Math.random()).toFixed(2)
+    msgObject.p1 = powerDistribution.ppf(Math.random()).toFixed(2)
+    if (isThreePhase) {
+      msgObject.powVAR = sign * powerDistribution.ppf(Math.random()).toFixed(2)
+      msgObject.powVA = powerDistribution.ppf(Math.random()).toFixed(2)
+    }
+    const finalMessage = objectToMessage(msgObject)
+    customizedMessages.push(finalMessage)
   })
   return keepOriginal ? originalMessage : customizedMessages
 }
