@@ -27,13 +27,16 @@ const encrypt = (incomingMessage, parameters) => {
     hmacBase64EncryptedArray[index] = hmacMessageBase64
   })
   // Final message
-  const messageHeader = `${wifiId}-${phases}-[`
-  const messageSensor1 = `${deviceId[0]}-${ivArray[0]}-${encryptedBase64Array[0]}-${hmacBase64IVArray[0]}-${hmacBase64EncryptedArray[0]}`
-  const messageSensor2 = `${deviceId[1]}-${ivArray[1]}-${encryptedBase64Array[1]}-${hmacBase64IVArray[1]}-${hmacBase64EncryptedArray[1]}`
-  const messageSensor3 = `${deviceId[2]}-${ivArray[2]}-${encryptedBase64Array[2]}-${hmacBase64IVArray[2]}-${hmacBase64EncryptedArray[2]}`
-  const message = `${messageHeader + messageSensor1},${messageSensor2},${messageSensor3}]\n`
+  if (phases === 'V3') {
+    const messageHeader = `${wifiId}-${phases}-[`
+    const messageSensor1 = `${deviceId[0]}-${ivArray[0]}-${encryptedBase64Array[0]}-${hmacBase64IVArray[0]}-${hmacBase64EncryptedArray[0]}`
+    const messageSensor2 = `${deviceId[1]}-${ivArray[1]}-${encryptedBase64Array[1]}-${hmacBase64IVArray[1]}-${hmacBase64EncryptedArray[1]}`
+    const messageSensor3 = `${deviceId[2]}-${ivArray[2]}-${encryptedBase64Array[2]}-${hmacBase64IVArray[2]}-${hmacBase64EncryptedArray[2]}`
+    const message = `${messageHeader + messageSensor1},${messageSensor2},${messageSensor3}]\n`
+    return message
+  }
 
-  return message
+  return `${wifiId}-${ivArray[0]}-${encryptedBase64Array[0]}-${hmacBase64IVArray[0]}-${hmacBase64EncryptedArray[0]}`
 }
 
 

@@ -1,3 +1,4 @@
+/* eslint-disable max-len */
 /* eslint-disable no-console */
 /* eslint-disable no-unused-vars */
 /* eslint-disable prefer-template */
@@ -23,17 +24,22 @@ import './config/env'
 
 DB.initDB()
 
-
 /**
- * @param {String} phases V3 = tree-phase, V1 = mono-phase
+ * @dev This parameters define what sensor is delivering messages and if is three or mono-phases
+ * All the rest of information is obtained from other files or the database.
+ * @param wifiID self-explanatory
+ * @param isThreePhase if true, delivers three-phase data, else, mono-phase
+ * @param keepBaseMessage if true, keep the original message of 'helpers/baseMessage',
+ * else, changes the message according to 'helpers/customizeMessage' parameters
  */
-const wifiId = '29'
-const phases = 'V3'
-const isThreePhase = phases === 'V3'
+const wifiId = '22'
+const isThreePhase = true
+const keepBaseMessage = true
 
 // Retrieve info from database
 const { Wifi } = Models
 Wifi.findOne({ wifiId }).then((wifiData) => {
+  const phases = isThreePhase ? 'V3' : 'V1'
   const parameters = {
     wifiId,
     deviceId: isThreePhase ? [`${wifiId}01`, `${wifiId}02`, `${wifiId}03`] : [`${wifiId}01`],
@@ -51,10 +57,11 @@ Wifi.findOne({ wifiId }).then((wifiData) => {
      * @description if the second parameter is true, it will keep the 'base message'
      * so it can be customized directly on the 'helpers/baseMessage.js' file
      */
+  const messageDelay = 15000 // in milliseconds
   const originalMessage = isThreePhase ? baseMessage[0] : baseMessage[1]
   setInterval(() => {
-    const customizedMessage = customizeMessage(originalMessage, false, wifiId, isThreePhase)
+    const customizedMessage = customizeMessage(originalMessage, keepBaseMessage, wifiId, isThreePhase)
     const encryptedMessage = encrypt(customizedMessage, parameters)
     sendMessage(encryptedMessage, customizedMessage)
-  }, 1500)
+  }, messageDelay)
 })
