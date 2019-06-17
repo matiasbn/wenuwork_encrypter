@@ -14,21 +14,60 @@
   * and send it to specified port.
   */
 
-const crypto = require('crypto')
-const prompts = require('prompts')
-const baseMessage = require('./helpers/baseMessage')
-const encrypt = require('./helpers/encrypt')
-const sendMessage = require('./helpers/sendMessage')
-const customizeMessage = require('./helpers/customizeMessage')
+const crypto = require('crypto');
+const prompts = require('prompts');
+const baseMessage = require('./helpers/baseMessage');
+const encrypt = require('./helpers/encrypt');
+const sendMessage = require('./helpers/sendMessage');
+const customizeMessage = require('./helpers/customizeMessage');
 
+const questions = [
+  {
+    type: 'select',
+    name: 'phases',
+    message: 'Choose type of sensor:',
+    choices: [
+      {
+        title: 'Three-phase sensor',
+        value: () => true,
+      },
+      {
+        title: 'Mono-phase sensor',
+        value: () => false,
+      },
+    ],
+  },
+  {
+    type: 'select',
+    name: 'delay',
+    message: 'Choose message delay:',
+    choices: [
+      {
+        title: '15 seconds (minimum)',
+        value: 15000,
+      },
+      {
+        title: '30 seconds',
+        value: 30000,
+      },
+      {
+        title: '45 seconds',
+        value: 45000,
+      },
+      {
+        title: '60 seconds',
+        value: 60000,
+      },
+    ],
+  },
+];
 
-prompts({
-    type: 'text',
-    name: 'threePhase',
-    message: 'three-phase sensor? [y/n] (default:yes)',
-    validate: threePhase => threePhase === 'y' || threePhase === 'Y' || threePhase === 'n' || threePhase === 'N' || threePhase === '',
-  }).then(response=>{
+function onCancel() {
+  console.log('WenuWork server connection test cancelled');
+  process.exit(0);
+}
 
+prompts(questions, { onCancel }).then((responses) => {
   /**
    * @dev This parameters define what sensor is delivering messages and if is three or mono-phases
    * All the rest of information is obtained from other files or the database.
@@ -38,12 +77,13 @@ prompts({
    * else, changes the message according to 'helpers/customizeMessage' parameters
    */
 
-  const isThreePhase = response.threePhase === 'Y' || response.threePhase === 'y' || response.threePhase === ''
-  const wifiId = '7'
-  const port = 23333
-  const address = '104.214.27.39'
-  const keepBaseMessage = false
-  const phases = isThreePhase ? 'V3' : 'V1'
+  const isThreePhase = responses.phases();
+  const messageDelay = responses.delay;
+  const wifiId = '7';
+  const port = 23333;
+  const address = '104.214.27.39';
+  const keepBaseMessage = false;
+  const phases = isThreePhase ? 'V3' : 'V1';
   const parameters = {
     wifiId,
     deviceId: isThreePhase ? [`${wifiId}01`, `${wifiId}02`, `${wifiId}03`] : [`${wifiId}01`],
@@ -55,18 +95,15 @@ prompts({
       crypto.randomBytes(16).toString('base64'),
       crypto.randomBytes(16).toString('base64'),
     ],
-  }
+  };
 
-  /**
-   * @description if the second parameter is true, it will keep the 'base message'
-   * so it can be customized directly on the 'helpers/baseMessage.js' file
-   */
-  const messageDelay = 15000 // in milliseconds
-  const originalMessage = isThreePhase ? baseMessage[0] : baseMessage[1]
-  console.log(`Wait ${messageDelay / 1000} seconds for first message`)
+  const originalMessage = isThreePhase ? baseMessage[0] : baseMessage[1];
+  let customizedMessage = customizeMessage(originalMessage, keepBaseMessage, wifiId, isThreePhase, messageDelay);
+  let encryptedMessage = encrypt(customizedMessage, parameters);
+  sendMessage(port, address, encryptedMessage, customizedMessage);
   setInterval(async () => {
-    const customizedMessage = customizeMessage(originalMessage, keepBaseMessage, wifiId, isThreePhase)
-    const encryptedMessage = encrypt(customizedMessage, parameters)
-    sendMessage(port, address, encryptedMessage, customizedMessage)
-  }, messageDelay)
-})
+    customizedMessage = customizeMessage(originalMessage, keepBaseMessage, wifiId, isThreePhase, messageDelay);
+    encryptedMessage = encrypt(customizedMessage, parameters);
+    sendMessage(port, address, encryptedMessage, customizedMessage);
+  }, messageDelay);
+});

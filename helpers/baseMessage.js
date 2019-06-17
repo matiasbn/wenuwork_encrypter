@@ -11,7 +11,7 @@ module.exports = [
   [
     '1560203800000000,*fard=3.2,bi=0,v=0.0,i1=0.0,p1=0.0$',
   ],
-]
+];
 // module.exports =  [
 //   // Three-phase
 //   [
