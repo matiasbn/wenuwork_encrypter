@@ -17,4 +17,4 @@ const objectToMessage = (msgObject) => {
   return message
 }
 
-export default objectToMessage
+module.exports =  objectToMessage

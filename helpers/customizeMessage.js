@@ -1,6 +1,6 @@
-import gaussian from 'gaussian'
-import stringToObject from './stringToObject'
-import objectToMessage from './objectToMessage'
+const gaussian = require('gaussian')
+const stringToObject = require('./stringToObject')
+const objectToMessage = require('./objectToMessage')
 /**
  * @description To setup samples as gaussian distributions N(mean,standardDeviation)
  * e.g. mean = 220 and standardDeviation = 0.01 would produce samples of
@@ -21,11 +21,11 @@ const powerMean = 880
 const powerStandardDeviation = Number(0.01)
 const powerDistribution = gaussian(powerMean, powerStandardDeviation)
 
-const customizeMessage = (originalMessage, keepOriginal, wifiId, isThreePhase) => {
+function customizeMessage(originalMessage, keepOriginal, wifiId, isThreePhase) {
   const customizedMessages = []
-  originalMessage.forEach((message) => {
+  for (let i = 0; i < originalMessage.length; i += 1) {
     const sign = Math.random() > 0.5 ? -1 : 1
-    const msgObject = stringToObject(message)
+    const msgObject = stringToObject(originalMessage[i])
     msgObject.id = wifiId
     msgObject.v = voltageDistribution.ppf(Math.random()).toFixed(2)
     msgObject.i1 = currentDistribution.ppf(Math.random()).toFixed(2)
@@ -36,8 +36,8 @@ const customizeMessage = (originalMessage, keepOriginal, wifiId, isThreePhase) =
     }
     const finalMessage = objectToMessage(msgObject)
     customizedMessages.push(finalMessage)
-  })
+  }
   return keepOriginal ? originalMessage : customizedMessages
 }
 
-export default customizeMessage
+module.exports = customizeMessage

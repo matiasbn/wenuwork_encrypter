@@ -1,10 +1,10 @@
-import crypto from 'crypto'
+const crypto = require('crypto')
 
 const encryptedBase64Array = []
 const hmacBase64IVArray = []
 const hmacBase64EncryptedArray = []
 
-const encrypt = (incomingMessage, parameters) => {
+function encrypt(incomingMessage, parameters) {
   const {
     wifiId, deviceId, phases, cryptoKey, ivArray, mac,
   } = parameters
@@ -40,4 +40,4 @@ const encrypt = (incomingMessage, parameters) => {
 }
 
 
-export default encrypt
+module.exports = encrypt

@@ -1,3 +1,6 @@
+/* eslint-disable no-spaced-func */
+/* eslint-disable func-call-spacing */
+/* eslint-disable no-unexpected-multiline */
 /* eslint-disable max-len */
 /* eslint-disable no-console */
 /* eslint-disable no-unused-vars */
@@ -11,41 +14,42 @@
   * and send it to specified port.
   */
 
-import { Models } from '@wenuwork/common'
-import crypto from 'crypto'
-import baseMessage from './helpers/baseMessage'
-import encrypt from './helpers/encrypt'
-import sendMessage from './helpers/sendMessage'
-import customizeMessage from './helpers/customizeMessage'
-import DB from './config/db'
+const crypto = require('crypto')
+const prompts = require('prompts')
+const baseMessage = require('./helpers/baseMessage')
+const encrypt = require('./helpers/encrypt')
+const sendMessage = require('./helpers/sendMessage')
+const customizeMessage = require('./helpers/customizeMessage')
 
-// Init db
-import './config/env'
 
-DB.initDB()
+prompts({
+    type: 'text',
+    name: 'threePhase',
+    message: 'three-phase sensor? [y/n] (default:yes)',
+    validate: threePhase => threePhase === 'y' || threePhase === 'Y' || threePhase === 'n' || threePhase === 'N' || threePhase === '',
+  }).then(response=>{
 
-/**
- * @dev This parameters define what sensor is delivering messages and if is three or mono-phases
- * All the rest of information is obtained from other files or the database.
- * @param wifiID self-explanatory
- * @param isThreePhase if true, delivers three-phase data, else, mono-phase
- * @param keepBaseMessage if true, keep the original message of 'helpers/baseMessage',
- * else, changes the message according to 'helpers/customizeMessage' parameters
- */
-const wifiId = '22'
-const isThreePhase = true
-const keepBaseMessage = true
+  /**
+   * @dev This parameters define what sensor is delivering messages and if is three or mono-phases
+   * All the rest of information is obtained from other files or the database.
+   * @param wifiID self-explanatory
+   * @param isThreePhase if true, delivers three-phase data, else, mono-phase
+   * @param keepBaseMessage if true, keep the original message of 'helpers/baseMessage',
+   * else, changes the message according to 'helpers/customizeMessage' parameters
+   */
 
-// Retrieve info from database
-const { Wifi } = Models
-Wifi.findOne({ wifiId }).then((wifiData) => {
+  const isThreePhase = response.threePhase === 'Y' || response.threePhase === 'y' || response.threePhase === ''
+  const wifiId = '7'
+  const port = 23333
+  const address = '104.214.27.39'
+  const keepBaseMessage = false
   const phases = isThreePhase ? 'V3' : 'V1'
   const parameters = {
     wifiId,
     deviceId: isThreePhase ? [`${wifiId}01`, `${wifiId}02`, `${wifiId}03`] : [`${wifiId}01`],
     phases,
-    mac: wifiData.mac,
-    cryptoKey: wifiData.crypto,
+    mac: '7coOd16',
+    cryptoKey: '8tyrj8aPGMBV4oRi',
     ivArray: [
       crypto.randomBytes(16).toString('base64'),
       crypto.randomBytes(16).toString('base64'),
@@ -54,14 +58,15 @@ Wifi.findOne({ wifiId }).then((wifiData) => {
   }
 
   /**
-     * @description if the second parameter is true, it will keep the 'base message'
-     * so it can be customized directly on the 'helpers/baseMessage.js' file
-     */
+   * @description if the second parameter is true, it will keep the 'base message'
+   * so it can be customized directly on the 'helpers/baseMessage.js' file
+   */
   const messageDelay = 15000 // in milliseconds
   const originalMessage = isThreePhase ? baseMessage[0] : baseMessage[1]
-  setInterval(() => {
+  console.log(`Wait ${messageDelay / 1000} seconds for first message`)
+  setInterval(async () => {
     const customizedMessage = customizeMessage(originalMessage, keepBaseMessage, wifiId, isThreePhase)
     const encryptedMessage = encrypt(customizedMessage, parameters)
-    sendMessage(encryptedMessage, customizedMessage)
+    sendMessage(port, address, encryptedMessage, customizedMessage)
   }, messageDelay)
 })

@@ -1,6 +1,6 @@
 /* eslint-disable no-eval */
 
-const stringToObject = (message) => {
+function stringToObject(message) {
   let modMsg = message.split(',')
   modMsg = modMsg.splice(1, modMsg.length - 1)
   modMsg[0] = modMsg[0].replace('*', '')
@@ -13,4 +13,4 @@ const stringToObject = (message) => {
   return modMsg
 }
 
-export default stringToObject
+module.exports = stringToObject

@@ -1,11 +1,9 @@
 /* eslint-disable no-console */
-import dgram from 'dgram'
+const dgram = require('dgram')
 
 const socket = dgram.createSocket('udp4')
-const port = 3000
-const address = '0.0.0.0'
 
-const sendMessage = (encryptedMessage, originalMessage) => {
+function sendMessage(port, address, encryptedMessage, originalMessage) {
   socket.send(encryptedMessage, port, address, () => {
     console.log('Encrypted message:')
     console.log(encryptedMessage)
@@ -14,4 +12,4 @@ const sendMessage = (encryptedMessage, originalMessage) => {
   })
 }
 
-export default sendMessage
+module.exports = sendMessage

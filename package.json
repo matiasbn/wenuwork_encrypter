@@ -4,7 +4,8 @@
   "description": "Script to encrypt data according to 'incoming' rules",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon --exec babel-node index.js",
+    "start": "nodemon index.js",
+    "build": "nexe index.js -o wenuwork-tester -t mac-x64-10.14.0",
     "lint": "eslint ./**/*.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -16,41 +17,8 @@
   "license": "ISC",
   "homepage": "https://bitbucket.org/matiasbn/wenuwork-encrypter#readme",
   "dependencies": {
-    "@wenuwork/common": "git+ssh://git@bitbucket.org/engie-factory/wenuwork-common.git#v1.4.0",
-    "gaussian": "^1.1.0"
-  },
-  "devDependencies": {
-    "@babel/cli": "^7.4.4",
-    "@babel/core": "^7.4.5",
-    "@babel/node": "^7.4.5",
-    "@babel/plugin-transform-async-to-generator": "^7.4.4",
-    "@babel/plugin-transform-runtime": "^7.4.4",
-    "@babel/preset-env": "^7.4.5",
-    "@babel/register": "^7.4.4",
-    "@commitlint/cli": "^8.0.0",
-    "@commitlint/config-conventional": "^8.0.0",
-    "babel-eslint": "^10.0.1",
-    "babel-plugin-add-module-exports": "^1.0.2",
-    "babel-preset-minify": "^0.5.0",
-    "cross-env": "^5.2.0",
-    "eslint": "^5.16.0",
-    "eslint-config-airbnb-base": "^13.1.0",
-    "eslint-plugin-import": "^2.17.3",
-    "eslint-plugin-promise": "^4.1.1",
-    "eslint-plugin-unicorn": "^9.1.0",
-    "husky": "^2.4.0",
-    "lint-staged": "^8.2.0",
-    "nodemon": "^1.19.1"
-  },
-  "husky": {
-    "hooks": {
-      "pre-commit": "lint-staged",
-      "commit-msg": "commitlint -E HUSKY_GIT_PARAMS"
-    }
-  },
-  "lint-staged": {
-    "*.js": [
-      "npm run lint -- --fix"
-    ]
+    "gaussian": "^1.1.0",
+    "nexe": "^3.3.0",
+    "prompts": "^2.1.0"
   }
 }
