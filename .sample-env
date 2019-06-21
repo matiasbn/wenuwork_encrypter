@@ -1,0 +1,7 @@
+NODE_ENV=development
+MONGO_APPNAME=wenuwork-incoming-v3
+MONGO_URL=mongodb://localhost:27017/wenusandbox
+PORT=3000
+REDIS_PORT=6379
+REDIS_HOST=127.0.0.1
+SENTRY_DNS=
