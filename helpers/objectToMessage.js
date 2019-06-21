@@ -1,5 +1,4 @@
-const objectToMessage = (msgObject) => {
-  const currentDate = Date.now() * 1000
+const objectToMessage = (msgObject, currentDate) => {
   let message = JSON.stringify(msgObject)
   message = message.replace('{', '').replace('}', '')
   message = message.split(',')

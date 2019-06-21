@@ -34,7 +34,7 @@ DB.initDB()
  */
 const wifiId = '22'
 const isThreePhase = true
-const keepBaseMessage = true
+const keepBaseMessage = false
 
 // Retrieve info from database
 const { Wifi } = Models
