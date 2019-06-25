@@ -60,6 +60,21 @@ const questions = [
       },
     ],
   },
+  {
+    type: 'select',
+    name: 'env',
+    message: 'Choose environment to deliver:',
+    choices: [
+      {
+        title: 'Test',
+        value: 'test',
+      },
+      {
+        title: 'Production',
+        value: 'prod',
+      },
+    ],
+  },
 ];
 
 function onCancel() {
@@ -79,9 +94,10 @@ prompts(questions, { onCancel }).then((responses) => {
 
   const isThreePhase = responses.phases();
   const messageDelay = responses.delay;
+  const environment = responses.env;
   const wifiId = '7';
   const port = 23333;
-  const address = '104.214.27.39';
+  const address = environment === 'test' ? '104.43.251.231' : '104.214.27.39';
   const keepBaseMessage = false;
   const phases = isThreePhase ? 'V3' : 'V1';
   const parameters = {
