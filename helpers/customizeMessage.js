@@ -19,7 +19,7 @@ const currentStandardDeviation = Number(0.01)
 const currentDistribution = gaussian(currentMean, currentStandardDeviation)
 
 // pow, powVA, powVAR
-const powerMean = 880
+const powerMean = 240
 const powerStandardDeviation = Number(0.01)
 const powerDistribution = gaussian(powerMean, powerStandardDeviation)
 
@@ -29,7 +29,7 @@ const customizeMessage = (originalMessage, keepOriginal, wifiId, isThreePhase) =
   console.log('\n')
   console.log(`Message delivered at ${format(currentDate / 1000, 'h:mm:ss a')}, wait 15 seconds for next message to be delivered`)
   originalMessage.forEach((message) => {
-    const sign = Math.random() > 0.5 ? 1 : 1
+    const sign = Math.random() > 0.5 ? 1 : -1
     const msgObject = stringToObject(message)
     msgObject.id = wifiId
     msgObject.v = voltageDistribution.ppf(Math.random()).toFixed(2)

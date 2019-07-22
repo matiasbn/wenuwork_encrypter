@@ -59,9 +59,12 @@ Wifi.findOne({ wifiId }).then((wifiData) => {
      */
   const messageDelay = 15000 // in milliseconds
   const originalMessage = isThreePhase ? baseMessage[0] : baseMessage[1]
+  let customizedMessage = customizeMessage(originalMessage, keepBaseMessage, wifiId, isThreePhase)
+  let encryptedMessage = encrypt(customizedMessage, parameters)
+  sendMessage(encryptedMessage, customizedMessage)
   setInterval(() => {
-    const customizedMessage = customizeMessage(originalMessage, keepBaseMessage, wifiId, isThreePhase)
-    const encryptedMessage = encrypt(customizedMessage, parameters)
+    customizedMessage = customizeMessage(originalMessage, keepBaseMessage, wifiId, isThreePhase)
+    encryptedMessage = encrypt(customizedMessage, parameters)
     sendMessage(encryptedMessage, customizedMessage)
   }, messageDelay)
 })
